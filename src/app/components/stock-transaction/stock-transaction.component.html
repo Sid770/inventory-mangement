@@ -1,0 +1,171 @@
+<div class="transaction-container">
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading item...</p>
+    </div>
+  } @else if (item(); as currentItem) {
+    <div class="transaction-wrapper">
+      <!-- Item Info Card -->
+      <div class="item-info-card">
+        <div class="card-header">
+          <h2>{{ currentItem.name }}</h2>
+          <span class="item-sku">{{ currentItem.sku }}</span>
+        </div>
+
+        <div class="item-stats">
+          <div class="stat-box" [class]="getStockStatusClass()">
+            <div class="stat-label">Current Stock</div>
+            <div class="stat-value">{{ currentItem.quantity }}</div>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-label">Minimum Stock</div>
+            <div class="stat-value">{{ currentItem.minimumStock }}</div>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-label">Unit Price</div>
+            <div class="stat-value">{{ formatCurrency(currentItem.price) }}</div>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-label">Total Value</div>
+            <div class="stat-value">{{ formatCurrency(currentItem.price * currentItem.quantity) }}</div>
+          </div>
+        </div>
+
+        @if (currentItem.isLowStock) {
+          <div class="alert-banner warning">
+            ⚠️ Low stock alert! Current stock is below minimum level.
+          </div>
+        }
+
+        @if (currentItem.quantity === 0) {
+          <div class="alert-banner critical">
+            🚫 Out of stock! Immediate restocking required.
+          </div>
+        }
+
+        <div class="item-details">
+          <div class="detail-row">
+            <span class="label">Category:</span>
+            <span class="value">{{ currentItem.category }}</span>
+          </div>
+          @if (currentItem.location) {
+            <div class="detail-row">
+              <span class="label">Location:</span>
+              <span class="value">{{ currentItem.location }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Transaction Form -->
+      <div class="transaction-form-card">
+        <h2>📊 Stock Transaction</h2>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label for="type">Transaction Type *</label>
+            <select id="type" formControlName="type">
+              <option value="StockIn">Stock In (Add Stock)</option>
+              <option value="StockOut">Stock Out (Remove Stock)</option>
+              <option value="Adjustment">Adjustment (Set Exact Quantity)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="quantity">Quantity *</label>
+            <input
+              id="quantity"
+              type="number"
+              formControlName="quantity"
+              placeholder="Enter quantity"
+              min="1"
+            />
+            @if (form.get('type')?.value === 'Adjustment') {
+              <span class="help-text">
+                This will set the stock to exactly this quantity
+              </span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="performedBy">Performed By *</label>
+            <input
+              id="performedBy"
+              type="text"
+              formControlName="performedBy"
+              placeholder="Enter your name"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="notes">Notes</label>
+            <textarea
+              id="notes"
+              formControlName="notes"
+              placeholder="Enter any additional notes (optional)"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <!-- Preview -->
+          <div class="transaction-preview">
+            <h3>Transaction Preview</h3>
+            <div class="preview-content">
+              @if (form.get('type')?.value === 'StockIn') {
+                <p>
+                  <strong>Current:</strong> {{ currentItem.quantity }} →
+                  <strong>New:</strong> {{ currentItem.quantity + (+form.get('quantity')?.value || 0) }}
+                </p>
+                <p class="preview-change positive">
+                  +{{ form.get('quantity')?.value || 0 }} units
+                </p>
+              } @else if (form.get('type')?.value === 'StockOut') {
+                <p>
+                  <strong>Current:</strong> {{ currentItem.quantity }} →
+                  <strong>New:</strong> {{ calculateNewQuantity() }}
+                </p>
+                <p class="preview-change negative">
+                  -{{ form.get('quantity')?.value || 0 }} units
+                </p>
+              } @else {
+                <p>
+                  <strong>Current:</strong> {{ currentItem.quantity }} →
+                  <strong>New:</strong> {{ form.get('quantity')?.value || 0 }}
+                </p>
+              }
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <a routerLink="/inventory" class="btn-cancel">Cancel</a>
+            <button
+              type="submit"
+              [disabled]="form.invalid || processing()"
+              class="btn-submit"
+            >
+              {{ processing() ? '⏳ Processing...' : '✅ Confirm Transaction' }}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Alert Display -->
+      @if (alert(); as alertData) {
+        <div class="alert-card">
+          <h3>🔔 Alert Generated</h3>
+          <p class="alert-message">{{ alertData.message }}</p>
+          <div class="alert-details">
+            <p><strong>Item:</strong> {{ alertData.itemName }}</p>
+            <p><strong>SKU:</strong> {{ alertData.sku }}</p>
+            <p><strong>Current Quantity:</strong> {{ alertData.currentQuantity }}</p>
+            <p><strong>Minimum Stock:</strong> {{ alertData.minimumStock }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,137 @@
+<div class="inventory-container">
+  <header class="page-header">
+    <div>
+      <h1>📦 Inventory Items</h1>
+      <p class="subtitle">Manage your inventory items</p>
+    </div>
+    <a routerLink="/inventory/new" class="add-btn">
+      ➕ Add New Item
+    </a>
+  </header>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="search-box">
+      <input
+        type="text"
+        placeholder="🔍 Search by name, SKU, or description..."
+        [value]="searchTerm()"
+        (input)="onSearchChange($any($event.target).value)"
+      />
+    </div>
+
+    <div class="filter-controls">
+      <select [value]="selectedCategory()" (change)="onCategoryChange($any($event.target).value)">
+        <option value="">All Categories</option>
+        @for (category of categories(); track category) {
+          <option [value]="category">{{ category }}</option>
+        }
+      </select>
+
+      <label class="checkbox-label">
+        <input
+          type="checkbox"
+          [checked]="showLowStockOnly()"
+          (change)="onLowStockToggle($any($event.target).checked)"
+        />
+        <span>Low Stock Only</span>
+      </label>
+
+      <button class="refresh-btn" (click)="loadItems()" [disabled]="loading()">
+        🔄 Refresh
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading inventory...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <p>❌ {{ error() }}</p>
+      <button (click)="loadItems()">Try Again</button>
+    </div>
+  } @else if (items().length === 0) {
+    <div class="empty-state">
+      <p>📭 No items found</p>
+      <a routerLink="/inventory/new" class="empty-action-btn">Add Your First Item</a>
+    </div>
+  } @else {
+    <div class="items-grid">
+      @for (item of items(); track item.id) {
+        <div class="item-card" [class]="getStockStatusClass(item)">
+          <div class="item-header">
+            <h3>{{ item.name }}</h3>
+            <span class="item-sku">{{ item.sku }}</span>
+          </div>
+
+          <div class="item-body">
+            @if (item.description) {
+              <p class="item-description">{{ item.description }}</p>
+            }
+
+            <div class="item-details">
+              <div class="detail-row">
+                <span class="detail-label">Category:</span>
+                <span class="category-badge">{{ item.category }}</span>
+              </div>
+
+              <div class="detail-row">
+                <span class="detail-label">Price:</span>
+                <span class="detail-value price">{{ formatCurrency(item.price) }}</span>
+              </div>
+
+              <div class="detail-row">
+                <span class="detail-label">Quantity:</span>
+                <span class="detail-value quantity" [class]="getStockStatusClass(item)">
+                  {{ item.quantity }} / {{ item.minimumStock }}
+                </span>
+              </div>
+
+              @if (item.location) {
+                <div class="detail-row">
+                  <span class="detail-label">Location:</span>
+                  <span class="detail-value">{{ item.location }}</span>
+                </div>
+              }
+
+              <div class="detail-row">
+                <span class="detail-label">Total Value:</span>
+                <span class="detail-value total-value">{{ formatCurrency(item.price * item.quantity) }}</span>
+              </div>
+            </div>
+
+            @if (item.isLowStock) {
+              <div class="stock-warning">
+                ⚠️ Low stock alert!
+              </div>
+            }
+
+            @if (item.quantity === 0) {
+              <div class="stock-danger">
+                🚫 Out of stock!
+              </div>
+            }
+          </div>
+
+          <div class="item-actions">
+            <a [routerLink]="['/inventory', item.id]" class="action-btn btn-view">
+              👁️ View
+            </a>
+            <a [routerLink]="['/inventory', item.id, 'edit']" class="action-btn btn-edit">
+              ✏️ Edit
+            </a>
+            <a [routerLink]="['/stock', item.id]" class="action-btn btn-stock">
+              📊 Stock
+            </a>
+            <button (click)="deleteItem(item.id, item.name)" class="action-btn btn-delete">
+              🗑️ Delete
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

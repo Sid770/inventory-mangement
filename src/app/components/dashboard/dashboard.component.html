@@ -1,0 +1,140 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h1>📊 Inventory Dashboard</h1>
+    <button class="refresh-btn" (click)="loadDashboardData()" [disabled]="loading()">
+      🔄 Refresh
+    </button>
+  </header>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading dashboard data...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <p>❌ {{ error() }}</p>
+      <button (click)="loadDashboardData()">Try Again</button>
+    </div>
+  } @else if (stats(); as statsData) {
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card stat-primary">
+        <div class="stat-icon">📦</div>
+        <div class="stat-content">
+          <h3>Total Items</h3>
+          <p class="stat-value">{{ statsData.totalItems }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card stat-warning">
+        <div class="stat-icon">⚠️</div>
+        <div class="stat-content">
+          <h3>Low Stock</h3>
+          <p class="stat-value">{{ statsData.lowStockItems }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card stat-danger">
+        <div class="stat-icon">🚫</div>
+        <div class="stat-content">
+          <h3>Out of Stock</h3>
+          <p class="stat-value">{{ statsData.outOfStockItems }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card stat-success">
+        <div class="stat-icon">💰</div>
+        <div class="stat-content">
+          <h3>Total Value</h3>
+          <p class="stat-value">{{ formatCurrency(statsData.totalInventoryValue) }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts Section -->
+    @if (hasAlerts() && alerts(); as alertData) {
+      <div class="alerts-section">
+        <h2>🔔 Stock Alerts</h2>
+        <div class="alerts-grid">
+          @for (alert of alertData.alerts; track alert.id) {
+            <div class="alert-card" [class]="getAlertClass(alert.alertLevel)">
+              <div class="alert-header">
+                <span class="alert-badge">{{ alert.alertLevel }}</span>
+                <span class="alert-sku">{{ alert.sku }}</span>
+              </div>
+              <h4>{{ alert.name }}</h4>
+              <div class="alert-details">
+                <p><strong>Current:</strong> {{ alert.quantity }}</p>
+                <p><strong>Minimum:</strong> {{ alert.minimumStock }}</p>
+                <p><strong>Category:</strong> {{ alert.category }}</p>
+              </div>
+              <a [routerLink]="['/inventory', alert.id]" class="alert-action">View Details →</a>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Category Breakdown -->
+    <div class="category-section">
+      <h2>📂 Category Breakdown</h2>
+      <div class="category-grid">
+        @for (category of statsData.categoryBreakdown; track category.category) {
+          <div class="category-card">
+            <h4>{{ category.category }}</h4>
+            <p class="category-count">{{ category.itemCount }} items</p>
+            <p class="category-value">{{ formatCurrency(category.totalValue) }}</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="activity-section">
+      <h2>📋 Recent Activity</h2>
+      <div class="activity-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Action</th>
+              <th>Quantity</th>
+              <th>Performed By</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (activity of statsData.recentTransactions; track activity.id) {
+              <tr>
+                <td>{{ activity.itemName }}</td>
+                <td>
+                  <span class="activity-type" [class.stock-in]="activity.type === 'StockIn'" 
+                        [class.stock-out]="activity.type === 'StockOut'">
+                    {{ activity.type }}
+                  </span>
+                </td>
+                <td>{{ activity.quantity }}</td>
+                <td>{{ activity.performedBy }}</td>
+                <td>{{ formatDate(activity.date) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <a routerLink="/inventory" class="action-btn btn-primary">
+        📦 View All Items
+      </a>
+      <a routerLink="/inventory/new" class="action-btn btn-success">
+        ➕ Add New Item
+      </a>
+      <a routerLink="/stock" class="action-btn btn-warning">
+        📊 Stock Transactions
+      </a>
+    </div>
+  }
+</div>

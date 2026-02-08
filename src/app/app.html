@@ -339,4 +339,42 @@
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
 
-<router-outlet />
+<div class="app-container">
+  <nav class="navbar">
+    <div class="nav-brand">
+      <h1>📦 {{ title() }}</h1>
+    </div>
+    
+    <button class="mobile-menu-btn" (click)="toggleMobileMenu()">
+      ☰
+    </button>
+
+    <div class="nav-links" [class.mobile-open]="mobileMenuOpen()">
+      <a 
+        routerLink="/dashboard" 
+        routerLinkActive="active"
+        (click)="closeMobileMenu()"
+      >
+        📊 Dashboard
+      </a>
+      <a 
+        routerLink="/inventory" 
+        routerLinkActive="active"
+        (click)="closeMobileMenu()"
+      >
+        📦 Inventory
+      </a>
+      <a 
+        routerLink="/inventory/new" 
+        routerLinkActive="active"
+        (click)="closeMobileMenu()"
+      >
+        ➕ Add Item
+      </a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <router-outlet />
+  </main>
+</div>

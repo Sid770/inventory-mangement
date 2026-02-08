@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{1AE8ACA6-933B-BF2A-3671-3E2EAC007D16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryAPI", "backend\InventoryAPI\InventoryAPI.csproj", "{F6751BEA-F9DE-09F2-DE5D-5BD6DBAFCF2A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F6751BEA-F9DE-09F2-DE5D-5BD6DBAFCF2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6751BEA-F9DE-09F2-DE5D-5BD6DBAFCF2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6751BEA-F9DE-09F2-DE5D-5BD6DBAFCF2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6751BEA-F9DE-09F2-DE5D-5BD6DBAFCF2A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F6751BEA-F9DE-09F2-DE5D-5BD6DBAFCF2A} = {1AE8ACA6-933B-BF2A-3671-3E2EAC007D16}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BA6565B3-E17A-47C4-BD37-F2582F805498}
+	EndGlobalSection
+EndGlobal

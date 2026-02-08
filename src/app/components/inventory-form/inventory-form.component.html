@@ -1,0 +1,162 @@
+<div class="form-container">
+  <div class="form-wrapper">
+    <header class="form-header">
+      <h1>{{ isEditMode() ? '✏️ Edit Item' : '➕ Add New Item' }}</h1>
+      <a routerLink="/inventory" class="back-btn">← Back to Inventory</a>
+    </header>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="inventory-form">
+      <div class="form-grid">
+        <!-- Name -->
+        <div class="form-group full-width">
+          <label for="name">Item Name *</label>
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            placeholder="Enter item name"
+            [class.invalid]="isFieldInvalid('name')"
+          />
+          @if (isFieldInvalid('name')) {
+            <span class="error-message">{{ getErrorMessage('name') }}</span>
+          }
+        </div>
+
+        <!-- Description -->
+        <div class="form-group full-width">
+          <label for="description">Description</label>
+          <textarea
+            id="description"
+            formControlName="description"
+            placeholder="Enter item description"
+            rows="3"
+            [class.invalid]="isFieldInvalid('description')"
+          ></textarea>
+          @if (isFieldInvalid('description')) {
+            <span class="error-message">{{ getErrorMessage('description') }}</span>
+          }
+        </div>
+
+        <!-- SKU -->
+        <div class="form-group">
+          <label for="sku">SKU *</label>
+          <input
+            id="sku"
+            type="text"
+            formControlName="sku"
+            placeholder="Enter SKU"
+            [class.invalid]="isFieldInvalid('sku')"
+          />
+          @if (isEditMode()) {
+            <span class="info-message">SKU cannot be changed</span>
+          }
+          @if (isFieldInvalid('sku')) {
+            <span class="error-message">{{ getErrorMessage('sku') }}</span>
+          }
+        </div>
+
+        <!-- Category -->
+        <div class="form-group">
+          <label for="category">Category *</label>
+          <input
+            id="category"
+            type="text"
+            formControlName="category"
+            list="categories"
+            placeholder="Enter or select category"
+            [class.invalid]="isFieldInvalid('category')"
+          />
+          <datalist id="categories">
+            @for (cat of categories(); track cat) {
+              <option [value]="cat">{{ cat }}</option>
+            }
+          </datalist>
+          @if (isFieldInvalid('category')) {
+            <span class="error-message">{{ getErrorMessage('category') }}</span>
+          }
+        </div>
+
+        <!-- Price -->
+        <div class="form-group">
+          <label for="price">Price ($) *</label>
+          <input
+            id="price"
+            type="number"
+            formControlName="price"
+            placeholder="0.00"
+            step="0.01"
+            min="0"
+            [class.invalid]="isFieldInvalid('price')"
+          />
+          @if (isFieldInvalid('price')) {
+            <span class="error-message">{{ getErrorMessage('price') }}</span>
+          }
+        </div>
+
+        <!-- Quantity (only for new items) -->
+        @if (!isEditMode()) {
+          <div class="form-group">
+            <label for="quantity">Initial Quantity *</label>
+            <input
+              id="quantity"
+              type="number"
+              formControlName="quantity"
+              placeholder="0"
+              min="0"
+              [class.invalid]="isFieldInvalid('quantity')"
+            />
+            @if (isFieldInvalid('quantity')) {
+              <span class="error-message">{{ getErrorMessage('quantity') }}</span>
+            }
+          </div>
+        } @else {
+          <div class="form-group">
+            <div class="info-box">
+              <strong>Note:</strong> To update quantity, use the Stock Transactions page.
+            </div>
+          </div>
+        }
+
+        <!-- Minimum Stock -->
+        <div class="form-group">
+          <label for="minimumStock">Minimum Stock Level *</label>
+          <input
+            id="minimumStock"
+            type="number"
+            formControlName="minimumStock"
+            placeholder="0"
+            min="0"
+            [class.invalid]="isFieldInvalid('minimumStock')"
+          />
+          @if (isFieldInvalid('minimumStock')) {
+            <span class="error-message">{{ getErrorMessage('minimumStock') }}</span>
+          }
+        </div>
+
+        <!-- Location -->
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input
+            id="location"
+            type="text"
+            formControlName="location"
+            placeholder="e.g., Warehouse A, Shelf 3"
+            [class.invalid]="isFieldInvalid('location')"
+          />
+          @if (isFieldInvalid('location')) {
+            <span class="error-message">{{ getErrorMessage('location') }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" routerLink="/inventory" class="btn-cancel">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="loading() || form.invalid" class="btn-submit">
+          {{ loading() ? '⏳ Saving...' : (isEditMode() ? '💾 Update Item' : '➕ Create Item') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
