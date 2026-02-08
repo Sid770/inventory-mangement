@@ -16,7 +16,7 @@ import {
 })
 export class InventoryService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:5000/api';
+  private readonly apiUrl = 'https://hclh1-eqa4ebdeb8cdfjb3.centralindia-01.azurewebsites.net/api';
 
   // Inventory CRUD operations
   getAllItems(category?: string, lowStockOnly?: boolean, search?: string): Observable<InventoryItem[]> {
