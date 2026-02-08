@@ -46,6 +46,7 @@ Thumbs.db
 # .NET Backend
 backend/**/bin/
 backend/**/obj/
+backend/**/publish/
 backend/**/*.user
 backend/**/*.suo
 
